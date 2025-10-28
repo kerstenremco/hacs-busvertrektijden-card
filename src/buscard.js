@@ -8,6 +8,7 @@ export class BustijdenCard extends LitElement {
     return {
       stops: { type: Array, state: true },
       entity: { type: String },
+      amount: { type: String },
       _hass: { type: Object },
       valid_entity: { type: Boolean, state: true },
       stop_name: { type: String, state: true },
@@ -24,16 +25,16 @@ export class BustijdenCard extends LitElement {
   }
 
   static getStubConfig(hass) {
-    const firstSensor = Object.keys(hass.entities).find((entityId) =>
-      entityId.startsWith("sensor.bus_stop_")
-    );
+    const firstSensor = Object.keys(hass.entities).find((entityId) => entityId.startsWith("sensor.bus_stop_"));
     return {
       entity: firstSensor || "",
+      amount: 8,
     };
   }
 
   setConfig(config) {
     this.entity = config.entity;
+    this.amount = config.amount < 1 ? 1 : config.amount > 10 ? 10 : config.amount;
   }
 
   set hass(hass) {
@@ -64,51 +65,44 @@ export class BustijdenCard extends LitElement {
           required: true,
           selector: { entity: { domain: "sensor" } },
         },
+        { name: "amount", required: true, selector: { text: { type: "number" } } },
       ],
+      computeHelper: (schema) => {
+        switch (schema.name) {
+          case "entity":
+            return "Busstop";
+          case "amount":
+            return "Aantal opkomende stops weergeven (minimaal 1, maximaal 10)";
+        }
+        return undefined;
+      },
     };
-  }
-
-  stripTime(timeString) {
-    return timeString.split(":").slice(0, 2).join(":");
   }
 
   render() {
     if (!this.valid_entity) {
-      return html`<div>
-        Ongeldige entity. Zorg ervoor dat je een sensor met het juiste formaat
-        gebruikt.
-      </div>`;
+      return html`<div>Ongeldige entity. Zorg ervoor dat je een sensor met het juiste formaat gebruikt.</div>`;
     }
 
     if (this.available === false) {
-      return html`<div>
-        Geen busgegevens beschikbaar. Controleer je internetverbinding.
-      </div>`;
+      return html`<div>Geen busgegevens beschikbaar. Controleer je internetverbinding.</div>`;
     }
 
     if (!this.stop_name) {
-      return html`<div>
-        Halte naam niet beschikbaar. Controleer of de haltecode goed in je
-        configuratie staat.
-      </div>`;
+      return html`<div>Halte naam niet beschikbaar. Controleer of de haltecode goed in je configuratie staat.</div>`;
     }
 
     if (this.stop_name.endsWith("None")) {
-      return html`<div>
-        Deze halte is niet gevonden. Controleer of de haltecode goed in je
-        configuratie staat.
-      </div>`;
+      return html`<div>Deze halte is niet gevonden. Controleer of de haltecode goed in je configuratie staat.</div>`;
     }
     if (!this.stops || this.stops.length === 0) {
-      return html`<div>
-        Er zijn momenteel geen aankomende bussen voor deze halte.
-      </div>`;
+      return html`<div>Er zijn momenteel geen aankomende bussen voor deze halte.</div>`;
     }
     return html`
       <div>
-        ${this.stops.map((stop) => {
+        ${this.stops.slice(0, this.amount).map((stop) => {
           let className = "bus-card";
-          if (stop.canceled) {
+          if (stop.cancelled) {
             className += " canceled";
           } else if (stop.delayInSeconds > 0) {
             className += " changed";
@@ -119,14 +113,10 @@ export class BustijdenCard extends LitElement {
                 <span class="line-number">${stop.routeShortName}</span>
 
                 <div class="bus-card-details">
-                  <span class="bus-time"
-                    >${this.stripTime(stop.arrivalTime)}</span
-                  >
-                  <span class="bus-time-changed"
-                    >${this.stripTime(stop.calculatedArrivalTime)}</span
-                  >
+                  <span class="bus-time">${stop.arrivalTime}</span>
+                  <span class="bus-time-changed">${stop.calculatedArrivalTime}</span>
                   <span class="bus-time-canceled">Geannuleerd</span>
-                  <span class="stop-text">${stop.tripHeadsign}</span>
+                  <span class="stop-text">${stop.headSign}</span>
                   <div class="bus-card-details-time">
                     <span class="bus-direction">${stop.routeLongName}</span>
                   </div>

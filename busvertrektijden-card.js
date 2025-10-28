@@ -618,7 +618,6 @@ const $bef0b097a0201904$export$f5c524615a7708d6 = {
 
 const $31ddf566cad37533$export$9dd6ff9ea0189349 = (0, $b1fa9b0acaf40b20$export$dbf350e5966cf602)`
   .bus-card {
-    color: #f7f1e3;
     margin-bottom: 10px;
   }
 
@@ -698,31 +697,15 @@ const $31ddf566cad37533$export$9dd6ff9ea0189349 = (0, $b1fa9b0acaf40b20$export$d
   }
 `;
 const $31ddf566cad37533$export$c89915e2373763c7 = (0, $ad0512c2874d4e1a$export$c0bb0b647f701bb5)`
-  <svg
-    width="20px"
-    height="20px"
-    viewBox="0 0 24 24"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
-  >
+  <svg width="20px" height="20px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
     <path
       d="M12 21C16.9706 21 21 16.9706 21 12C21 7.02944 16.9706 3 12 3C7.02944 3 3 7.02944 3 12C3 16.9706 7.02944 21 12 21Z"
       stroke-width="1.5"
       stroke-linecap="round"
       stroke-linejoin="round"
     />
-    <path
-      d="M12 6V12"
-      stroke-width="1.5"
-      stroke-linecap="round"
-      stroke-linejoin="round"
-    />
-    <path
-      d="M16.24 16.24L12 12"
-      stroke-width="1.5"
-      stroke-linecap="round"
-      stroke-linejoin="round"
-    />
+    <path d="M12 6V12" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M16.24 16.24L12 12" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
   </svg>
 `;
 
@@ -736,6 +719,9 @@ class $2388023d729b4380$export$5365bfeef88eca6f extends (0, $bef0b097a0201904$ex
                 state: true
             },
             entity: {
+                type: String
+            },
+            amount: {
                 type: String
             },
             _hass: {
@@ -768,11 +754,13 @@ class $2388023d729b4380$export$5365bfeef88eca6f extends (0, $bef0b097a0201904$ex
     static getStubConfig(hass) {
         const firstSensor = Object.keys(hass.entities).find((entityId)=>entityId.startsWith("sensor.bus_stop_"));
         return {
-            entity: firstSensor || ""
+            entity: firstSensor || "",
+            amount: 8
         };
     }
     setConfig(config) {
         this.entity = config.entity;
+        this.amount = config.amount < 1 ? 1 : config.amount > 10 ? 10 : config.amount;
     }
     set hass(hass) {
         this._hass = hass;
@@ -799,37 +787,39 @@ class $2388023d729b4380$export$5365bfeef88eca6f extends (0, $bef0b097a0201904$ex
                             domain: "sensor"
                         }
                     }
+                },
+                {
+                    name: "amount",
+                    required: true,
+                    selector: {
+                        text: {
+                            type: "number"
+                        }
+                    }
                 }
-            ]
+            ],
+            computeHelper: (schema)=>{
+                switch(schema.name){
+                    case "entity":
+                        return "Busstop";
+                    case "amount":
+                        return "Aantal opkomende stops weergeven (minimaal 1, maximaal 10)";
+                }
+                return undefined;
+            }
         };
     }
-    stripTime(timeString) {
-        return timeString.split(":").slice(0, 2).join(":");
-    }
     render() {
-        if (!this.valid_entity) return (0, $ad0512c2874d4e1a$export$c0bb0b647f701bb5)`<div>
-        Ongeldige entity. Zorg ervoor dat je een sensor met het juiste formaat
-        gebruikt.
-      </div>`;
-        if (this.available === false) return (0, $ad0512c2874d4e1a$export$c0bb0b647f701bb5)`<div>
-        Geen busgegevens beschikbaar. Controleer je internetverbinding.
-      </div>`;
-        if (!this.stop_name) return (0, $ad0512c2874d4e1a$export$c0bb0b647f701bb5)`<div>
-        Halte naam niet beschikbaar. Controleer of de haltecode goed in je
-        configuratie staat.
-      </div>`;
-        if (this.stop_name.endsWith("None")) return (0, $ad0512c2874d4e1a$export$c0bb0b647f701bb5)`<div>
-        Deze halte is niet gevonden. Controleer of de haltecode goed in je
-        configuratie staat.
-      </div>`;
-        if (!this.stops || this.stops.length === 0) return (0, $ad0512c2874d4e1a$export$c0bb0b647f701bb5)`<div>
-        Er zijn momenteel geen aankomende bussen voor deze halte.
-      </div>`;
+        if (!this.valid_entity) return (0, $ad0512c2874d4e1a$export$c0bb0b647f701bb5)`<div>Ongeldige entity. Zorg ervoor dat je een sensor met het juiste formaat gebruikt.</div>`;
+        if (this.available === false) return (0, $ad0512c2874d4e1a$export$c0bb0b647f701bb5)`<div>Geen busgegevens beschikbaar. Controleer je internetverbinding.</div>`;
+        if (!this.stop_name) return (0, $ad0512c2874d4e1a$export$c0bb0b647f701bb5)`<div>Halte naam niet beschikbaar. Controleer of de haltecode goed in je configuratie staat.</div>`;
+        if (this.stop_name.endsWith("None")) return (0, $ad0512c2874d4e1a$export$c0bb0b647f701bb5)`<div>Deze halte is niet gevonden. Controleer of de haltecode goed in je configuratie staat.</div>`;
+        if (!this.stops || this.stops.length === 0) return (0, $ad0512c2874d4e1a$export$c0bb0b647f701bb5)`<div>Er zijn momenteel geen aankomende bussen voor deze halte.</div>`;
         return (0, $ad0512c2874d4e1a$export$c0bb0b647f701bb5)`
       <div>
-        ${this.stops.map((stop)=>{
+        ${this.stops.slice(0, this.amount).map((stop)=>{
             let className = "bus-card";
-            if (stop.canceled) className += " canceled";
+            if (stop.cancelled) className += " canceled";
             else if (stop.delayInSeconds > 0) className += " changed";
             return (0, $ad0512c2874d4e1a$export$c0bb0b647f701bb5)`
             <div class="${className}">
@@ -837,14 +827,10 @@ class $2388023d729b4380$export$5365bfeef88eca6f extends (0, $bef0b097a0201904$ex
                 <span class="line-number">${stop.routeShortName}</span>
 
                 <div class="bus-card-details">
-                  <span class="bus-time"
-                    >${this.stripTime(stop.arrivalTime)}</span
-                  >
-                  <span class="bus-time-changed"
-                    >${this.stripTime(stop.calculatedArrivalTime)}</span
-                  >
+                  <span class="bus-time">${stop.arrivalTime}</span>
+                  <span class="bus-time-changed">${stop.calculatedArrivalTime}</span>
                   <span class="bus-time-canceled">Geannuleerd</span>
-                  <span class="stop-text">${stop.tripHeadsign}</span>
+                  <span class="stop-text">${stop.headSign}</span>
                   <div class="bus-card-details-time">
                     <span class="bus-direction">${stop.routeLongName}</span>
                   </div>
