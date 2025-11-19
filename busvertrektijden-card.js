@@ -621,6 +621,11 @@ const $31ddf566cad37533$export$9dd6ff9ea0189349 = (0, $b1fa9b0acaf40b20$export$d
     margin-bottom: 10px;
   }
 
+  .bus-card .bus-card-alert {
+    color: #ff5252;
+    font-weight: bold;
+  }
+
   .line-number {
     background-color: #ff793f;
     display: inline-block;
@@ -833,6 +838,9 @@ class $2388023d729b4380$export$5365bfeef88eca6f extends (0, $bef0b097a0201904$ex
                   <span class="stop-text">${stop.stop.stopHeadsign}</span>
                   <div class="bus-card-details-time">
                     <span class="bus-direction">${stop.stop.routeLongName}</span>
+                  </div>
+                  <div class="bus-card-alert">
+                    <span>${stop.alert?.message || stop.alert?.title || ""}</span>
                   </div>
                 </div>
                 <span class="live-time">${stop.realTime.minutesUntil} min</span>

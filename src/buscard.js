@@ -120,6 +120,9 @@ export class BustijdenCard extends LitElement {
                   <div class="bus-card-details-time">
                     <span class="bus-direction">${stop.stop.routeLongName}</span>
                   </div>
+                  <div class="bus-card-alert">
+                    <span>${stop.alert?.message || stop.alert?.title || ""}</span>
+                  </div>
                 </div>
                 <span class="live-time">${stop.realTime.minutesUntil} min</span>
                 ${timeIcon}

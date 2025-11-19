@@ -5,6 +5,11 @@ export const styles = css`
     margin-bottom: 10px;
   }
 
+  .bus-card .bus-card-alert {
+    color: #ff5252;
+    font-weight: bold;
+  }
+
   .line-number {
     background-color: #ff793f;
     display: inline-block;
