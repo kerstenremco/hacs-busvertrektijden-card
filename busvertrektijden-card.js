@@ -819,23 +819,23 @@ class $2388023d729b4380$export$5365bfeef88eca6f extends (0, $bef0b097a0201904$ex
       <div>
         ${this.stops.slice(0, this.amount).map((stop)=>{
             let className = "bus-card";
-            if (stop.cancelled) className += " canceled";
-            else if (stop.delayInSeconds > 0) className += " changed";
+            if (stop.realTime.cancelled) className += " canceled";
+            else if (stop.realTime.delay > 0) className += " changed";
             return (0, $ad0512c2874d4e1a$export$c0bb0b647f701bb5)`
             <div class="${className}">
               <div class="bus-card-head">
-                <span class="line-number">${stop.routeShortName}</span>
+                <span class="line-number">${stop.stop.routeShortName}</span>
 
                 <div class="bus-card-details">
-                  <span class="bus-time">${stop.arrivalTime}</span>
-                  <span class="bus-time-changed">${stop.calculatedArrivalTime}</span>
+                  <span class="bus-time">${stop.stop.arrivalTime}</span>
+                  <span class="bus-time-changed">${stop.realTime.calculatedArrivalTime}</span>
                   <span class="bus-time-canceled">Geannuleerd</span>
-                  <span class="stop-text">${stop.headSign}</span>
+                  <span class="stop-text">${stop.stop.stopHeadsign}</span>
                   <div class="bus-card-details-time">
-                    <span class="bus-direction">${stop.routeLongName}</span>
+                    <span class="bus-direction">${stop.stop.routeLongName}</span>
                   </div>
                 </div>
-                <span class="live-time">${stop.minutesUntil} min</span>
+                <span class="live-time">${stop.realTime.minutesUntil} min</span>
                 ${0, $31ddf566cad37533$export$c89915e2373763c7}
               </div>
             </div>

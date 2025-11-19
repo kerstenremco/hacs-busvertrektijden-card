@@ -102,26 +102,26 @@ export class BustijdenCard extends LitElement {
       <div>
         ${this.stops.slice(0, this.amount).map((stop) => {
           let className = "bus-card";
-          if (stop.cancelled) {
+          if (stop.realTime.cancelled) {
             className += " canceled";
-          } else if (stop.delayInSeconds > 0) {
+          } else if (stop.realTime.delay > 0) {
             className += " changed";
           }
           return html`
             <div class="${className}">
               <div class="bus-card-head">
-                <span class="line-number">${stop.routeShortName}</span>
+                <span class="line-number">${stop.stop.routeShortName}</span>
 
                 <div class="bus-card-details">
-                  <span class="bus-time">${stop.arrivalTime}</span>
-                  <span class="bus-time-changed">${stop.calculatedArrivalTime}</span>
+                  <span class="bus-time">${stop.stop.arrivalTime}</span>
+                  <span class="bus-time-changed">${stop.realTime.calculatedArrivalTime}</span>
                   <span class="bus-time-canceled">Geannuleerd</span>
-                  <span class="stop-text">${stop.headSign}</span>
+                  <span class="stop-text">${stop.stop.stopHeadsign}</span>
                   <div class="bus-card-details-time">
-                    <span class="bus-direction">${stop.routeLongName}</span>
+                    <span class="bus-direction">${stop.stop.routeLongName}</span>
                   </div>
                 </div>
-                <span class="live-time">${stop.minutesUntil} min</span>
+                <span class="live-time">${stop.realTime.minutesUntil} min</span>
                 ${timeIcon}
               </div>
             </div>
